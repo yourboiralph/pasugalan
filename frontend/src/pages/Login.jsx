@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FaRegCopy } from "react-icons/fa";
 import robloxbio from "../assets/roblox-bio.png";
+import { AppContext } from "../context/AppContext";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [randomWords, setRandomWords] = useState("");
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
@@ -11,11 +14,13 @@ const Login = () => {
     username: "",
   });
 
+  const { setUserRbProf, setToken } = useContext(AppContext);
+
   useEffect(() => {
     async function getRandomPhrase() {
       try {
         const response = await fetch(
-          "https://random-word-api.herokuapp.com/word?number=6"
+          "https://random-word-api.vercel.app/api?words=5"
         );
         const words = await response.json();
         setRandomWords(words.join(" "));
@@ -48,9 +53,18 @@ const Login = () => {
     if (data.errors) {
       setErrors(data.errors);
       toast.error("Invalid Login");
-    } else {
-      console.log(data);
-      console.log(data.user.username);
+    }
+    console.log(data);
+    if (
+      !data.errors &&
+      response.ok &&
+      data.user.username === formData.username
+    ) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("userRbProf", data.user.profile_image); // Store userRbProf
+      setToken(data.token);
+      setUserRbProf(data.profile_image);
+      navigate("/");
     }
   };
   return (
@@ -58,7 +72,7 @@ const Login = () => {
       <div className="flex justify-center w-full text-white text-md ">
         <form>
           <div className="flex flex-col justify-center items-center border backdrop-blur-md border-gray-600 bg-gradient-to-r from-gray-700 to-gray-800 w-fit px-10 py-5 rounded-lg">
-            <h1 className="mb-5 uppercase font-bold text-3xl">Login</h1>
+            <h1 className="mb-5 uppercase font-bold text-3xl">Login </h1>
             <p className="mb-2">Write this phrase in your roblox bio</p>
             <div className="flex flex-col items-center">
               <div className="w-96 mb-5">
@@ -81,7 +95,9 @@ const Login = () => {
               <input
                 type="text"
                 className={`w-80 bg-gray-900 px-4 py-2 border ${
-                  errors.username ? " border-red-600" : " border-white"
+                  errors.username || errors.description
+                    ? " border-red-600"
+                    : " border-white"
                 } rounded-md`}
                 placeholder="Enter Username..."
                 value={formData.username}
@@ -91,6 +107,9 @@ const Login = () => {
               />
               {errors.username && (
                 <p className="text-sm text-red-600">{errors.username[0]}</p>
+              )}
+              {errors.description && (
+                <p className="text-sm text-red-600">{errors.description}</p>
               )}
             </div>
             <div

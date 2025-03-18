@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
+
     // NO REGISTER... ROBLOX AUTH :D
 
     public function login(Request $request){
@@ -41,10 +42,22 @@ class AuthController extends Controller
         }
 
         if($RBLX_DESC !== $DESC_KEY){
-            return [
-                'error' => 'Invalid description'
-            ];
+            return response()->json(['errors' => [
+                'description' => "Invalid Description",
+            ]], 401);
         }
+
+        $profileFetch = Http::get('https://thumbnails.roblox.com/v1/users/avatar?userIds=' . $RBLX_ID . '&size=150x150&format=Png&isCircular=false');
+
+        if ($profileFetch->successful()) {
+            $data = $profileFetch->json()['data'] ?? [];
+
+            if (!empty($data) && isset($data[0]['imageUrl'])) {
+                $RBLX_PROF = $data[0]['imageUrl'];
+            }
+        }
+
+        $user->profile_image = $RBLX_PROF;
 
         $token = $user->createToken($user->username);
 

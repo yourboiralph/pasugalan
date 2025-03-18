@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
+import Navbar from "../components/Navbar";
+import { AppContext } from "../context/AppContext";
 
 const Home = () => {
+  const { user } = useContext(AppContext);
+
   return (
     <div>
       <Navbar />
-      <h1>Home</h1>
+      <p>Hi {user ? user.username : "no user"}</p>
     </div>
   );
 };
