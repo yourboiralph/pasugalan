@@ -20,11 +20,16 @@ class Pet extends Model
     {
         return $this->belongsTo(PetValue::class, 'pet_values_id');
     }
+    // Define the relationship for head_pet_id in PlacedBet
+    public function headBets()
+    {
+        return $this->hasMany(PlacedBet::class, 'head_pet_id');
+    }
 
-
-    // In the Pet model:
-    public function placedBets() {
-        return $this->hasMany(PlacedBet::class, 'pet_id'); // Assuming the foreign key is 'pet_id'
+    // Define the relationship for tail_pet_id in PlacedBet
+    public function tailBets()
+    {
+        return $this->hasMany(PlacedBet::class, 'tail_pet_id');
     }
 
 }

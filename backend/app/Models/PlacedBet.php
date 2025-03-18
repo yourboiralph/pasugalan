@@ -12,7 +12,7 @@ class PlacedBet extends Model
     protected $fillable = [
         'user_head',
         'user_tail',
-        'head_pets_id',
+        'head_pet_id',
         'tail_pet_id',
         'result',
     ];
@@ -32,7 +32,7 @@ class PlacedBet extends Model
     // Define the relationship to Pet for head_pet_id
     public function headPet()
     {
-        return $this->belongsTo(Pet::class, 'head_pets_id');
+        return $this->belongsTo(Pet::class, 'head_pet_id');
     }
 
     // Define the relationship to Pet for tail_pet_id

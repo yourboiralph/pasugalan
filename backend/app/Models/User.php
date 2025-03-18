@@ -52,6 +52,16 @@ class User extends Authenticatable
         return $this->hasMany(Pet::class);
     }
 
+    // Define the relationship for user_head in PlacedBet
+    public function headBets()
+    {
+        return $this->hasMany(PlacedBet::class, 'user_head');
+    }
 
+    // Define the relationship for user_tail in PlacedBet
+    public function tailBets()
+    {
+        return $this->hasMany(PlacedBet::class, 'user_tail');
+    }
 
 }

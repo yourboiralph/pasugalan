@@ -15,14 +15,14 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_head');
             $table->unsignedBigInteger('user_tail');
-            $table->unsignedBigInteger('head_pets_id');
+            $table->unsignedBigInteger('head_pet_id');
             $table->unsignedBigInteger('tail_pet_id');
             $table->string('result');
             $table->timestamps();
 
             $table->foreign('user_head')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('user_tail')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('head_pets_id')->references('id')->on('pets')->onDelete('cascade');
+            $table->foreign('head_pet_id')->references('id')->on('pets')->onDelete('cascade');
             $table->foreign('tail_pet_id')->references('id')->on('pets')->onDelete('cascade');
         });
     }

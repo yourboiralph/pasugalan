@@ -25,13 +25,13 @@ class PlacedBetController extends Controller
         $fields = $request->validate([
             'user_head' => 'required',
             'user_tail' => 'required',
-            'head_pets_id' => 'required',
+            'head_pet_id' => 'required',
             'tail_pet_id' => 'required',
             'result' => 'required',
         ]);
 
-        $user_head_type = Pet::find($request->head_pets_id)->type;
-        $user_head_value = Pet::find($request->head_pets_id)->petValue->{$user_head_type};
+        $user_head_type = Pet::find($request->head_pet_id)->type;
+        $user_head_value = Pet::find($request->head_pet_id)->petValue->{$user_head_type};
 
         $user_tail_type = Pet::find($request->tail_pet_id)->type;
         $user_tail_value = Pet::find($request->tail_pet_id)->petValue->{$user_tail_type};
@@ -50,7 +50,7 @@ class PlacedBetController extends Controller
                     'bet' => $bet
                 ], 201);
             }elseif($request->result === 'tail'){
-                Pet::find($request->head_pets_id)->update([
+                Pet::find($request->head_pet_id)->update([
                     'user_id' => $request->user_tail
                 ]);
                 return response()->json([
