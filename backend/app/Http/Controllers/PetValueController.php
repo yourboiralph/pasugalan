@@ -50,7 +50,7 @@ class PetValueController extends Controller
      */
     public function show($id)
     {
-        return PetValue::find($id);
+        return PetValue::where('name', $id)->get();
     }
 
     /**

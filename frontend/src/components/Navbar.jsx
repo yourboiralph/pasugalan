@@ -33,7 +33,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="bg-[#2bb484] w-full px-10 py-5 text-lg font-semibold text-white">
+    <div className="bg-[#1E2A38] w-full px-10 py-5 text-lg font-semibold text-white shadow-md">
       <ul>
         <div className="flex justify-between">
           <div className="flex gap-10 items-center">

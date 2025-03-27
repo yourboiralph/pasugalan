@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Pet;
 use App\Models\PetValue;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PetController extends Controller
 {
@@ -13,7 +15,8 @@ class PetController extends Controller
      */
     public function index()
     {
-        return Pet::all();
+        $pets = Pet::with('user', 'petValue')->where('user_id', Auth::user()->id)->get();
+        return response()->json($pets);
     }
 
     /**
@@ -21,23 +24,40 @@ class PetController extends Controller
      */
     public function store(Request $request)
     {
-        // Step 1: Validate the request data
+        // Step 1: Validate incoming request
         $fields = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'pet_values_id' => 'required|exists:pet_values,id',
-            'type' => 'required|string|max:255'
+            'roblox_username' => 'required|string',
+            'pet_data' => 'required|array',
+            'pet_data.*.name' => 'required|string|exists:pet_values,name',
+            'pet_data.*.type' => 'required|string|max:255',
         ]);
 
-        // Step 2: Create the Pet record
-        $pet = Pet::create($fields);
+        // Step 2: Get or create the user by username
+        $user = User::firstOrCreate(
+            ['username' => $fields['roblox_username']],
+            []
+        );
 
-        // Step 3: Return a success response
+        // Step 3: Create pets using pet name lookup
+        $pets = [];
+
+        foreach ($fields['pet_data'] as $petItem) {
+            $petValue = PetValue::where('name', $petItem['name'])->first();
+
+            if ($petValue) {
+                $pets[] = Pet::create([
+                    'user_id' => $user->id,
+                    'pet_values_id' => $petValue->id,
+                    'type' => $petItem['type']
+                ]);
+            }
+        }
+
         return response()->json([
-            'message' => 'Pet successfully created',
-            'pet' => $pet
+            'message' => 'Pets successfully created',
+            'pets' => $pets
         ], 201);
     }
-
 
     /**
      * Display the specified resource.

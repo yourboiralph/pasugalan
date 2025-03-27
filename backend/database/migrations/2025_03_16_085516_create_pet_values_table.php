@@ -26,6 +26,7 @@ return new class extends Migration
             $table->integer('mega_ride')->nullable();
             $table->integer('mega_fly')->nullable();
             $table->integer('mega_flyride')->nullable();
+            $table->string("image_link")->nullable();
             $table->timestamps();
         });
     }

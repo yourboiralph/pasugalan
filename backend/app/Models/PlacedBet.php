@@ -12,8 +12,7 @@ class PlacedBet extends Model
     protected $fillable = [
         'user_head',
         'user_tail',
-        'head_pet_id',
-        'tail_pet_id',
+        'isActive',
         'result',
     ];
 
@@ -29,15 +28,9 @@ class PlacedBet extends Model
         return $this->belongsTo(User::class, 'user_tail');
     }
 
-    // Define the relationship to Pet for head_pet_id
-    public function headPet()
+    // Relationship to placed_bet_pets
+    public function pets()
     {
-        return $this->belongsTo(Pet::class, 'head_pet_id');
-    }
-
-    // Define the relationship to Pet for tail_pet_id
-    public function tailPet()
-    {
-        return $this->belongsTo(Pet::class, 'tail_pet_id');
+        return $this->hasMany(PlacedBetPets::class);
     }
 }
