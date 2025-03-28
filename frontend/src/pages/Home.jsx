@@ -13,7 +13,12 @@ const Home = () => {
 
   const fetchAllActiveBets = useCallback(async () => {
     try {
-      const response = await fetch("/api/bet/getactivebet");
+      const response = await fetch("/api/bet/getactivebet", {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       setActiveBets(data.bet || []);
     } catch (error) {

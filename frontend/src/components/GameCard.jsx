@@ -14,6 +14,8 @@ const GameCard = ({ name, bet, value, side, betId, socket, winner }) => {
       const response = await fetch(`/api/petsvalue/${petName}`, {
         headers: {
           Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
       });
 

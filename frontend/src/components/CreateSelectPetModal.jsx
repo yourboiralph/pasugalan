@@ -41,6 +41,8 @@ const CreateSelectPetModal = ({
       const response = await fetch(`/api/pets/`, {
         headers: {
           Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
       });
       const data = await response.json();
@@ -92,6 +94,7 @@ const CreateSelectPetModal = ({
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
+          Accept: "application/json",
           "Content-Type": "application/json",
         },
         body: JSON.stringify(updatedFormData),
