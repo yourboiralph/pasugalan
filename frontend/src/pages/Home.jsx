@@ -63,7 +63,11 @@ const Home = () => {
 
   // Initialize socket connection once
   useEffect(() => {
-    const newSocket = io.connect("http://localhost:8001");
+    const newSocket = io.connect(
+      import.meta.env.PROD
+        ? "http://47.129.34.40:8001"
+        : "http://localhost:8001"
+    );
     setSocket(newSocket);
 
     // Clean up socket connection on unmount
@@ -84,6 +88,12 @@ const Home = () => {
 
     // Listen for bet joins/results
     socket.on("join_bet_from_backend", handleBetResult);
+
+    // Listen for deleted bets
+    socket.on("delete_entry_from_backend", (data) => {
+      console.log("Bet deleted ID:", data);
+      fetchAllActiveBets();
+    });
 
     // Fetch active bets on component mount
     fetchAllActiveBets();

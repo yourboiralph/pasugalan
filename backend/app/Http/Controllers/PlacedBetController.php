@@ -54,23 +54,37 @@ class PlacedBetController extends Controller
 
         // Validate head pet IDs
         if ($request->has('head_pet_ids')) {
-            $invalidHeadPets = array_diff($request->head_pet_ids, $user->pets->pluck('id')->toArray());
+            $userPetIds = $user->pets()->where('in_bet', false)->pluck('id')->toArray();
+            $invalidHeadPets = array_diff($request->head_pet_ids, $userPetIds);
+
             if (!empty($invalidHeadPets)) {
                 return response()->json([
-                    'error' => 'The following head pet IDs do not belong to the user: ' . implode(', ', $invalidHeadPets),
+                    'error' => 'The following head pet IDs are either not yours or already in a bet: ' . implode(', ', $invalidHeadPets),
                 ], 400);
             }
         }
 
         // Validate tail pet IDs
         if ($request->has('tail_pet_ids')) {
-            $invalidTailPets = array_diff($request->tail_pet_ids, $user->pets->pluck('id')->toArray());
+            $userPetIds = $user->pets()->where('in_bet', false)->pluck('id')->toArray();
+            $invalidTailPets = array_diff($request->tail_pet_ids, $userPetIds);
+
             if (!empty($invalidTailPets)) {
                 return response()->json([
-                    'error' => 'The following tail pet IDs do not belong to the user: ' . implode(', ', $invalidTailPets),
+                    'error' => 'The following tail pet IDs are either not yours or already in a bet: ' . implode(', ', $invalidTailPets),
                 ], 400);
             }
         }
+
+        if (
+            ($request->has('head_pet_ids') && count($request->head_pet_ids) > 10) ||
+            ($request->has('tail_pet_ids') && count($request->tail_pet_ids) > 10)
+        ) {
+            return response()->json([
+                'error' => 'You can only bet up to 10 pets per side.'
+            ], 400);
+        }
+
 
         // Create the bet
         $bet = PlacedBet::create($fields);
@@ -82,6 +96,11 @@ class PlacedBetController extends Controller
                     'pet_id' => $petId,
                     'side' => 'head',
                 ]);
+                $bettedPet = Pet::find($petId);
+                if ($bettedPet) {
+                    $bettedPet->update(['in_bet' => true]);
+                }
+
             }
         }
 
@@ -91,6 +110,11 @@ class PlacedBetController extends Controller
                     'pet_id' => $petId,
                     'side' => 'tail',
                 ]);
+                $bettedPet = Pet::find($petId);
+                if ($bettedPet) {
+                    $bettedPet->update(['in_bet' => true]);
+                }
+
             }
         }
 
@@ -119,6 +143,16 @@ class PlacedBetController extends Controller
                 'error' => 'This bet already has two players.'
             ], 400);
         }
+
+        if (
+            ($request->has('head_pet_ids') && count($request->head_pet_ids) > 10) ||
+            ($request->has('tail_pet_ids') && count($request->tail_pet_ids) > 10)
+        ) {
+            return response()->json([
+                'error' => 'You can only bet up to 10 pets per side.'
+            ], 400);
+        }
+
 
         // Validate the request
         $fields = $request->validate([
@@ -301,8 +335,27 @@ class PlacedBetController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $bet = PlacedBet::with('pets')->find($id);
+
+        if (!$bet) {
+            return response()->json(['error' => 'Bet not found.'], 404);
+        }
+
+        // Reset all associated pets' in_bet status to false
+        foreach ($bet->pets as $betPet) {
+            $pet = Pet::find($betPet->pet_id);
+            if ($pet) {
+                $pet->update(['in_bet' => false]);
+            }
+        }
+
+        // Delete the bet and related bet_pet entries if needed
+        $bet->pets()->delete(); // assuming this is the bet_pet records
+        $bet->delete();
+
+        return response()->json(['message' => 'Bet and related pets successfully cleared.'], 200);
     }
+
 }

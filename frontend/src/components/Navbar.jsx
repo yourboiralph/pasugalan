@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
@@ -6,6 +6,12 @@ import toast from "react-hot-toast";
 const Navbar = () => {
   const { token } = useContext(AppContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  });
 
   const handleLogout = async (e) => {
     e.preventDefault();
@@ -30,7 +36,10 @@ const Navbar = () => {
     } else {
       // Handle errors if the response is not OK
       console.log("Logout failed:", response.statusText);
+      localStorage.removeItem("userRbProf");
+      localStorage.removeItem("token");
       toast.success("Logged out Failed");
+      navigate("/login");
     }
   };
 

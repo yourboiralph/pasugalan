@@ -76,7 +76,7 @@ const Login = () => {
       <div className="flex justify-center w-full text-white text-md ">
         <form>
           <div className="flex flex-col justify-center items-center border backdrop-blur-md border-gray-600 bg-gradient-to-r from-gray-700 to-gray-800 w-fit px-10 py-5 rounded-lg">
-            <h1 className="mb-5 uppercase font-bold text-3xl">Login </h1>
+            <h1 className="mb-5 uppercase font-bold text-3xl">Login</h1>
             <p className="mb-2">Write this phrase in your roblox bio</p>
             <div className="flex flex-col items-center">
               <div className="w-96 mb-5">

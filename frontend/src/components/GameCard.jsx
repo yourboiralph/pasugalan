@@ -6,7 +6,7 @@ import { BsThreeDots } from "react-icons/bs";
 const GameCard = ({ name, bet, value, side, betId, socket, winner }) => {
   const [openModal, setOpenModal] = useState(false);
   const [petImages, setPetImages] = useState({});
-  const { user } = useContext(AppContext);
+  const { user, token } = useContext(AppContext);
 
   const getImageOfPet = async (petName) => {
     try {
@@ -27,6 +27,21 @@ const GameCard = ({ name, bet, value, side, betId, socket, winner }) => {
     }
   };
 
+  const deleteEntry = async () => {
+    const response = await fetch(`/api/bet/place/${betId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    socket.emit("delete_entry_from_frontend", betId);
+    console.log(data);
+  };
+
   // Fetch images for all pets when component mounts
   useEffect(() => {
     const fetchPetImages = async () => {
@@ -45,8 +60,8 @@ const GameCard = ({ name, bet, value, side, betId, socket, winner }) => {
     <div className="p-10 bg-[#8ba2bd] h-fit rounded-lg">
       <p className="font-bold">{user.username === name ? `You` : name}</p>
       <div className="flex items-center">
-        {bet.map((petName, index) => (
-          <div className="" key={index}>
+        {bet.slice(0, 3).map((petName, index) => (
+          <div key={index}>
             {petImages[petName] && (
               <img
                 src={petImages[petName]}
@@ -56,6 +71,7 @@ const GameCard = ({ name, bet, value, side, betId, socket, winner }) => {
             )}
           </div>
         ))}
+
         <div className="p-1 rounded-full bg-[#121820]">
           <BsThreeDots color="white" size={20} />
         </div>
@@ -72,16 +88,26 @@ const GameCard = ({ name, bet, value, side, betId, socket, winner }) => {
         {user.username === name ? "My" : "Opponent"} side:{" "}
         <span className="font-bold">{side}</span>
       </p>
-      <button
-        className={`px-4 py-2 rounded-lg shadow-lg ${
-          user.username === name ? "bg-[#475c77]" : "bg-[#007BFF]"
-        } mt-5`}
-        onClick={() => {
-          setOpenModal(true);
-        }}
-      >
-        Join game
-      </button>
+
+      {user.username === name ? (
+        <button
+          className={`px-4 py-2 rounded-lg shadow-lg bg-red-600 mt-5`}
+          onClick={() => {
+            deleteEntry();
+          }}
+        >
+          Delete Entry
+        </button>
+      ) : (
+        <button
+          className={`px-4 py-2 rounded-lg shadow-lg bg-[#007BFF] mt-5`}
+          onClick={() => {
+            setOpenModal(true);
+          }}
+        >
+          Join game
+        </button>
+      )}
 
       <SelectPetModal
         socket={socket}

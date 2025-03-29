@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('pet_values_id')->constrained('pet_values')->onDelete('cascade');
             $table->string('type'); // Example: 'neon', 'normal'
+            $table->boolean('in_bet')->default(false);
             $table->timestamps();
         });
     }

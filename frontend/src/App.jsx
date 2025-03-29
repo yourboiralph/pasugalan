@@ -4,6 +4,11 @@ import Login from "./pages/Login";
 import Auth from "./layouts/Auth";
 import Guest from "./layouts/Guest";
 
+import Admin from "./layouts/Admin";
+import AdminDashboard from "./pages/Admin/Dashboard";
+import AdminUsers from "./pages/Admin/Users";
+import AdminSystem from "./pages/Admin/System";
+
 function App() {
   return (
     <div>
@@ -13,6 +18,11 @@ function App() {
         </Route>
         <Route element={<Guest />}>
           <Route path="/login" element={<Login />} />
+        </Route>
+        <Route path="/admin" element={<Admin />}>
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="system" element={<AdminSystem />} />
         </Route>
       </Routes>
     </div>

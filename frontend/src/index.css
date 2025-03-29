@@ -1,3 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --primary: #121820;
+  --secondary: #1e2a38;
+  --tertiary: #2a3b4f;
+  --light: #3b5169;
+  font-family: "Orbitron";
+}

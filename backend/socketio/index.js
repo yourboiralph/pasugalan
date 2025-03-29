@@ -32,6 +32,10 @@ io.on("connection", (socket) => {
         io.to(data.roomId).emit("join_bet_from_backend", data);
     });
 
+    socket.on("delete_entry_from_frontend", (data) => {
+        io.emit("delete_entry_from_backend", data);
+    });
+
     socket.on("disconnect", () => {
         console.log("User disconnected:", socket.id);
     });
