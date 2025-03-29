@@ -8,7 +8,7 @@ const UsersTable = () => {
   const [useCase, setUseCase] = useState("");
   const getAllUsers = async () => {
     try {
-      const response = await fetch("/api/pets", {
+      const response = await fetch("/api/petsall", {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
