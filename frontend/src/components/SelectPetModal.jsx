@@ -9,6 +9,7 @@ import neon_fly from "../assets/neon_fly.png";
 import neon_flyride from "../assets/neon_flyride.png";
 import neon_ride from "../assets/neon_ride.png";
 import ride from "../assets/ride.png";
+import toast from "react-hot-toast";
 
 const SelectPetModal = ({
   openModal,
@@ -62,6 +63,7 @@ const SelectPetModal = ({
   // Handle pet selection/deselection
   const handlePetClick = (pet) => {
     const isSelected = selectedPets.includes(pet.id);
+    const petValue = pet.pet_value[pet.type];
 
     if (isSelected) {
       // Deselect the pet
@@ -69,6 +71,11 @@ const SelectPetModal = ({
       setUserValue((prev) => prev - pet.pet_value[pet.type]); // Subtract pet value
     } else {
       // Select the pet
+      if (petValue == null || petValue === 0) {
+        console.log("No value found for this pet:", pet);
+        toast.error("Invalid Value for pet.");
+        return;
+      }
       setSelectedPets((prev) => [...prev, pet.id]);
       setUserValue((prev) => prev + pet.pet_value[pet.type]); // Add pet value
     }
@@ -155,18 +162,21 @@ const SelectPetModal = ({
           </p>
           <p>Your Value: {userValue}</p>
         </div>
-        <div className="grid grid-cols-7 gap-4">
+        <div className="grid grid-cols-7 gap-4 max-h-[500px] overflow-y-auto">
           {pets.map((pet, index) => {
             const isSelected = selectedPets.includes(pet.id); // Check if pet is selected
 
             return (
               <div
                 key={index}
-                className={`p-2 rounded-lg ${
+                className={`p-2 flex flex-col items-center justify-center rounded-lg ${
                   isSelected ? "bg-blue-200" : "bg-gray-200"
                 }`}
               >
-                <div className="relative w-fit">
+                <div
+                  className="relative w-fit
+                "
+                >
                   <img
                     src={pet.pet_value.image_link}
                     onClick={(e) => {

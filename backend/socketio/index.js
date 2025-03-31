@@ -15,10 +15,13 @@ const io = new Server(server, {
     },
 });
 
+let connectedUsers = new Set();
+
 // Handle connections
 io.on("connection", (socket) => {
     console.log("User connected:", socket.id);
-
+    connectedUsers.add(socket.id); // ✅ ADD THIS LINE
+    io.emit("user_count", connectedUsers.size);
     // Listen for bet creation events
     socket.on("bet_created_from_frontend", (data) => {
         socket.join(data.roomId);
@@ -30,6 +33,11 @@ io.on("connection", (socket) => {
         console.log("Received join_bet_from_frontend");
         // Replace socket.emit with io.to(roomId).emit to send to all in the room
         io.to(data.roomId).emit("join_bet_from_backend", data);
+        io.emit("delete_entry_done_from_backend", data);
+    });
+
+    socket.on("send_message_to_all_from_frontend", (data) => {
+        io.emit("send_message_to_all_from_backend", data);
     });
 
     socket.on("delete_entry_from_frontend", (data) => {
@@ -38,6 +46,8 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", () => {
         console.log("User disconnected:", socket.id);
+        connectedUsers.delete(socket.id);
+        io.emit("user_count", connectedUsers.size);
     });
 });
 

@@ -34,6 +34,7 @@ class PetValueController extends Controller
             'mega_ride' => 'nullable|integer',
             'mega_fly' => 'nullable|integer',
             'mega_flyride' => 'nullable|integer',
+            'image_link' => 'nullable'
         ]);
 
 
@@ -72,6 +73,7 @@ class PetValueController extends Controller
             'mega_ride' => 'nullable|integer',
             'mega_fly' => 'nullable|integer',
             'mega_flyride' => 'nullable|integer',
+            'image_link' => 'nullable'
         ]);
 
 

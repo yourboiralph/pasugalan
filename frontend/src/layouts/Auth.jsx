@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
+import { Toaster } from "react-hot-toast";
 
 const Auth = () => {
   const { token } = useContext(AppContext);
@@ -17,6 +18,7 @@ const Auth = () => {
   // If user data is available, render the protected content
   return (
     <div>
+      <Toaster position="top-right" />
       <Outlet />
     </div>
   );

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import { AppContext } from "../context/AppContext";
+import { Toaster } from "react-hot-toast";
 
 const Admin = () => {
   const { user } = useContext(AppContext);
@@ -33,6 +34,7 @@ const Admin = () => {
         <Sidebar />
       </div>
       <div className="col-span-10">
+        <Toaster position="top-right" />
         <Outlet />
       </div>
     </div>

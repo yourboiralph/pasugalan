@@ -2,6 +2,8 @@ import React, { useContext, useState, useEffect } from "react";
 import SelectPetModal from "./SelectPetModal";
 import { AppContext } from "../context/AppContext";
 import { BsThreeDots } from "react-icons/bs";
+import CoinFlip from "./CoinFlip";
+import toast from "react-hot-toast";
 
 const GameCard = ({ name, bet, value, side, betId, socket, winner }) => {
   const [openModal, setOpenModal] = useState(false);
@@ -38,6 +40,7 @@ const GameCard = ({ name, bet, value, side, betId, socket, winner }) => {
     });
 
     const data = await response.json();
+    toast.success("Deleted");
     socket.emit("delete_entry_from_frontend", betId);
     console.log(data);
   };
@@ -57,8 +60,14 @@ const GameCard = ({ name, bet, value, side, betId, socket, winner }) => {
   }, [bet]);
 
   return (
-    <div className="p-10 bg-[#8ba2bd] h-fit rounded-lg">
+    <div className="p-10 bg-[#8ba2bd] h-fit rounded-lg relative">
       <p className="font-bold">{user.username === name ? `You` : name}</p>
+      {winner && (
+        <div className="absolute top-5 right-5">
+          <CoinFlip side={winner.toLowerCase()} />
+        </div>
+      )}
+
       <div className="flex items-center">
         {bet.slice(0, 3).map((petName, index) => (
           <div key={index}>
@@ -79,11 +88,6 @@ const GameCard = ({ name, bet, value, side, betId, socket, winner }) => {
       <p>
         Value: <span className="font-bold">{value}</span>
       </p>
-      {winner && (
-        <p className="font-bold text-green-600">
-          Winner: {winner.toUpperCase()}
-        </p>
-      )}
       <p>
         {user.username === name ? "My" : "Opponent"} side:{" "}
         <span className="font-bold">{side}</span>

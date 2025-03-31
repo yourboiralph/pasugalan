@@ -58,6 +58,7 @@ class AuthController extends Controller
         }
 
         $user->profile_image = $RBLX_PROF;
+        $user->save();
 
         $token = $user->createToken($user->username);
 

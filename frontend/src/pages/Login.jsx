@@ -71,6 +71,35 @@ const Login = () => {
       navigate("/");
     }
   };
+
+  function copyToClipboard(text) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+
+    // Prevent scrolling to bottom
+    textarea.style.position = "fixed";
+    textarea.style.top = "0";
+    textarea.style.left = "0";
+    textarea.style.opacity = "0";
+
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+
+    try {
+      const successful = document.execCommand("copy");
+      if (successful) {
+        console.log("Copied successfully!");
+      } else {
+        console.warn("Copy failed.");
+      }
+    } catch (err) {
+      console.error("Error copying to clipboard:", err);
+    }
+
+    document.body.removeChild(textarea);
+  }
+
   return (
     <>
       <div className="flex justify-center w-full text-white text-md ">
@@ -92,7 +121,7 @@ const Login = () => {
                   className="text-xl hover:cursor-pointer hover:scale-110 transition-all duration-200"
                   onClick={() => {
                     toast.success("copied");
-                    navigator.clipboard.writeText(randomWords);
+                    copyToClipboard(randomWords);
                   }}
                 />
               </div>
@@ -116,12 +145,13 @@ const Login = () => {
                 <p className="text-sm text-red-600">{errors.description}</p>
               )}
             </div>
-            <div
+            <button
               className="px-4 py-2 w-fit bg-gray-500 rounded-lg mt-5 uppercase cursor-pointer transition-all duration-200 hover:scale-110 hover:bg-gray-600"
               onClick={handleLogin}
+              type="submit"
             >
               Login
-            </div>
+            </button>
           </div>
         </form>
       </div>

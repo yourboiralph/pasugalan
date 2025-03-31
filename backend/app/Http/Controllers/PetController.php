@@ -15,12 +15,17 @@ class PetController extends Controller
      */
     public function index()
     {
-        $pets = Pet::with('user', 'petValue')->where('user_id', Auth::user()->id)->where('in_bet', false)->get();
+        $pets = Pet::with('user', 'petValue')->where('user_id', Auth::user()->id)->where('in_bet', false)->where('in_withdraw', false)->get();
+        return response()->json($pets);
+    }
+
+    public function getInventory(){
+        $pets = Pet::with('user', 'petValue')->where('user_id', Auth::user()->id)->get();
         return response()->json($pets);
     }
 
     public function getAllIndex(){
-        $pets = Pet::with('petValue', 'user')->get();
+        $pets = Pet::with('petValue', 'user')->paginate(15);
         return response()->json($pets);
     }
 
@@ -33,7 +38,7 @@ class PetController extends Controller
         $fields = $request->validate([
             'roblox_username' => 'required|string',
             'pet_data' => 'required|array',
-            'pet_data.*.name' => 'required|string|exists:pet_values,name',
+            'pet_data.*.name' => 'required|string',
             'pet_data.*.type' => 'required|string|max:255',
         ]);
 
@@ -43,26 +48,116 @@ class PetController extends Controller
             []
         );
 
-        // Step 3: Create pets using pet name lookup
+        // Step 3: Create pets using pet name lookup or creation
         $pets = [];
 
         foreach ($fields['pet_data'] as $petItem) {
-            $petValue = PetValue::where('name', $petItem['name'])->first();
+            $imageLink = "https://cdn.playadopt.me/items/{$petItem['name']}.png";
 
-            if ($petValue) {
-                $pets[] = Pet::create([
-                    'user_id' => $user->id,
-                    'pet_values_id' => $petValue->id,
-                    'type' => $petItem['type']
-                ]);
-            }
+            $petValue = PetValue::firstOrCreate(
+                ['name' => $petItem['name']],
+                ['image_link' => $imageLink]
+            );
+
+            $pets[] = Pet::create([
+                'user_id' => $user->id,
+                'pet_values_id' => $petValue->id,
+                'type' => $petItem['type']
+            ]);
         }
+
 
         return response()->json([
             'message' => 'Pets successfully created',
             'pets' => $pets
         ], 201);
     }
+
+
+    public function withdraw_pets(Request $request)
+    {
+        $fields = $request->validate([
+            'roblox_username' => 'required|string',
+            'pet_data' => 'required|array',
+            'pet_data.*' => 'integer|distinct'
+        ]);
+
+        // Fetch all pets in one query for efficiency
+        $pets = Pet::whereIn('id', $fields['pet_data'])->get();
+
+        // Check if all pets exist
+        if ($pets->count() !== count($fields['pet_data'])) {
+            return response()->json([
+                'message' => 'Some pets were not found.'
+            ], 404);
+        }
+
+        // Check if any pet is already in withdraw
+        $alreadyInWithdraw = $pets->filter(function ($pet) {
+            return $pet->in_withdraw;
+        });
+
+        if ($alreadyInWithdraw->isNotEmpty()) {
+            return response()->json([
+                'message' => 'Cannot proceed: Some pets are already marked as in withdraw.',
+                'already_in_withdraw_ids' => $alreadyInWithdraw->pluck('id')
+            ], 422);
+        }
+
+        // If all checks pass, update all
+        foreach ($pets as $pet) {
+            $pet->update([
+                'in_withdraw' => true
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Pets successfully marked as in withdraw.'
+        ], 200);
+    }
+
+
+    public function cancel_withdraw_pets(Request $request)
+    {
+        $fields = $request->validate([
+            'roblox_username' => 'required|string',
+            'pet_data' => 'required|array',
+            'pet_data.*' => 'integer|distinct'
+        ]);
+
+        $pets = Pet::whereIn('id', $fields['pet_data'])->get();
+
+        if ($pets->count() !== count($fields['pet_data'])) {
+            return response()->json([
+                'message' => 'Some pets were not found.'
+            ], 404);
+        }
+
+        // Check if all pets are actually in withdraw
+        $notInWithdraw = $pets->filter(function ($pet) {
+            return !$pet->in_withdraw;
+        });
+
+        if ($notInWithdraw->isNotEmpty()) {
+            return response()->json([
+                'message' => 'Cannot proceed: Some pets are not in withdraw.',
+                'not_in_withdraw_ids' => $notInWithdraw->pluck('id')
+            ], 422);
+        }
+
+        // Cancel withdraw
+        foreach ($pets as $pet) {
+            $pet->update([
+                'in_withdraw' => false
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Pets successfully removed from withdraw.'
+        ], 200);
+    }
+
+
 
     /**
      * Display the specified resource.

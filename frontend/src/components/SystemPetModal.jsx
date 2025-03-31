@@ -11,8 +11,8 @@ const SystemPetModal = ({
     name: "",
     normal: "",
     normal_fly: "",
-    ride: "",
-    flyride: "",
+    normal_ride: "",
+    normal_flyride: "",
     neon: "",
     neon_fly: "",
     neon_ride: "",
@@ -21,6 +21,7 @@ const SystemPetModal = ({
     mega_fly: "",
     mega_ride: "",
     mega_flyride: "",
+    image_link: "",
   });
 
   const addPet = async () => {
@@ -63,8 +64,8 @@ const SystemPetModal = ({
         name: petData.name || "",
         normal: petData.normal || "",
         normal_fly: petData.normal_fly || "",
-        ride: petData.ride || "",
-        flyride: petData.flyride || "",
+        normal_ride: petData.normal_ride || "",
+        normal_flyride: petData.normal_flyride || "",
         neon: petData.neon || "",
         neon_fly: petData.neon_fly || "",
         neon_ride: petData.neon_ride || "",
@@ -73,14 +74,15 @@ const SystemPetModal = ({
         mega_fly: petData.mega_fly || "",
         mega_ride: petData.mega_ride || "",
         mega_flyride: petData.mega_flyride || "",
+        image_link: petData.image_link || "",
       });
     } else if (useCase === "ADD") {
       setForm({
         name: "",
         normal: "",
         normal_fly: "",
-        ride: "",
-        flyride: "",
+        normal_ride: "",
+        normal_flyride: "",
         neon: "",
         neon_fly: "",
         neon_ride: "",
@@ -89,6 +91,7 @@ const SystemPetModal = ({
         mega_fly: "",
         mega_ride: "",
         mega_flyride: "",
+        image_link: "",
       });
     }
   }, [useCase, petData]);
@@ -164,7 +167,7 @@ const SystemPetModal = ({
                   <label className="text-[.7rem]">Normal Ride</label>
                   <input
                     name="ride"
-                    value={form.ride}
+                    value={form.normal_ride}
                     onChange={(e) => {
                       setForm((prev) => ({
                         ...prev,
@@ -180,7 +183,7 @@ const SystemPetModal = ({
                   <label className="text-[.7rem]">Normal Fly Ride</label>
                   <input
                     name="flyride"
-                    value={form.flyride}
+                    value={form.normal_flyride}
                     onChange={(e) => {
                       setForm((prev) => ({
                         ...prev,
@@ -323,6 +326,22 @@ const SystemPetModal = ({
                   />
                 </div>
               </div>
+            </div>
+            <div className="col-span-4">
+              <label className="text-[.7rem]">Image Link</label>
+              <input
+                name="name"
+                value={form.image_link}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    image_link: e.target.value,
+                  }))
+                }
+                className="px-4 py-1 w-full text-black"
+                type="text"
+                placeholder="Image Link"
+              />
             </div>
           </form>
 

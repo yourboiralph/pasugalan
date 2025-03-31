@@ -12,7 +12,7 @@ class PetValue extends Model
     protected $fillable = [
         'name', 'normal', 'normal_ride', 'normal_fly', 'normal_flyride',
         'neon', 'neon_ride', 'neon_fly', 'neon_flyride',
-        'mega', 'mega_ride', 'mega_fly', 'mega_flyride'
+        'mega', 'mega_ride', 'mega_fly', 'mega_flyride', 'image_link'
     ];
 
     public function pets()

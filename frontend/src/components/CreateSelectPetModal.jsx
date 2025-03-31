@@ -2,13 +2,16 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import fly from "../assets/ride.png";
 import flyride from "../assets/flyride.png";
+import mega from "../assets/mega.png";
 import mega_fly from "../assets/mega_fly.png";
 import mega_flyride from "../assets/mega_flyride.png";
 import mega_ride from "../assets/mega_ride.png";
+import neon from "../assets/neon.png";
 import neon_fly from "../assets/neon_fly.png";
 import neon_flyride from "../assets/neon_flyride.png";
 import neon_ride from "../assets/neon_ride.png";
 import ride from "../assets/ride.png";
+import toast from "react-hot-toast";
 
 const CreateSelectPetModal = ({
   openModal,
@@ -27,9 +30,11 @@ const CreateSelectPetModal = ({
   const petTypeImages = {
     fly,
     flyride,
+    mega,
     mega_fly,
     mega_flyride,
     mega_ride,
+    neon,
     neon_fly,
     neon_flyride,
     neon_ride,
@@ -61,15 +66,23 @@ const CreateSelectPetModal = ({
   // Handle pet selection/deselection
   const handlePetClick = (pet) => {
     const isSelected = selectedPets.includes(pet.id);
+    const petValue = pet.pet_value[pet.type];
 
     if (isSelected) {
       // Deselect the pet
       setSelectedPets((prev) => prev.filter((id) => id !== pet.id));
-      setUserValue((prev) => prev - pet.pet_value[pet.type]); // Subtract pet value
+      setUserValue((prev) => prev - (petValue || 0)); // avoid NaN
     } else {
+      // Prevent selecting pet with no value
+      if (petValue == null || petValue === 0) {
+        console.log("No value found for this pet:", pet);
+        toast.error("Invalid Value for pet.");
+        return;
+      }
+
       // Select the pet
       setSelectedPets((prev) => [...prev, pet.id]);
-      setUserValue((prev) => prev + pet.pet_value[pet.type]); // Add pet value
+      setUserValue((prev) => prev + petValue);
     }
   };
 
@@ -109,6 +122,7 @@ const CreateSelectPetModal = ({
       console.log(data);
       if (response.ok) {
         onClose();
+        setUserValue(0);
         setFormData({});
         setSelectedPets([]);
         setErrors({});
@@ -137,6 +151,7 @@ const CreateSelectPetModal = ({
         <p
           onClick={() => {
             onClose();
+            setUserValue(0);
             setFormData({});
             setSelectedPets([]);
             setErrors({});
@@ -176,24 +191,23 @@ const CreateSelectPetModal = ({
           </div>
           <p>Your Value: {userValue}</p>
         </div>
-        <div className="grid grid-cols-7 gap-4">
+        <div className="grid grid-cols-7 gap-4 max-h-[500px] overflow-y-auto">
           {pets.map((pet, index) => {
             const isSelected = selectedPets.includes(pet.id); // Check if pet is selected
-
             return (
               <div
                 key={index}
-                className={`p-2 rounded-lg ${
+                className={`p-2 rounded-lg flex flex-col items-center ${
                   isSelected ? "bg-blue-200" : "bg-gray-200"
                 }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePetClick(pet); // Handle pet selection/deselection
+                }}
               >
                 <div className="relative w-fit">
                   <img
                     src={pet.pet_value.image_link}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handlePetClick(pet); // Handle pet selection/deselection
-                    }}
                     className="w-20 cursor-pointer"
                     alt={pet.pet_value.name}
                   />

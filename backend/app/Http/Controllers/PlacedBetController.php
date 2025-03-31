@@ -253,12 +253,21 @@ class PlacedBetController extends Controller
 
         // Transfer pets from the loser to the winner
         $loserPets = $bet->pets()->where('side', $loserSide)->get();
+        $winnerPets = $bet->pets()->where('side', $winnerSide)->get();
         foreach ($loserPets as $pet) {
             // Update the pet's owner to the winner
             Pet::where('id', $pet->pet_id)->update([
                 'user_id' => $winnerId,
+                'in_bet' => false
             ]);
         }
+
+        foreach ($winnerPets as $pet) {
+            Pet::where('id', $pet->pet_id)->update([
+                'in_bet' => false
+            ]);
+        }
+
 
         return response()->json([
             'message' => 'Player 2 has joined the bet successfully. Pets have been transferred to the winner.',

@@ -8,6 +8,7 @@ import Admin from "./layouts/Admin";
 import AdminDashboard from "./pages/Admin/Dashboard";
 import AdminUsers from "./pages/Admin/Users";
 import AdminSystem from "./pages/Admin/System";
+import Inventory from "./pages/Inventory";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Routes>
         <Route element={<Auth />}>
           <Route path="/" element={<Home />} />
+          <Route path="/inventory" element={<Inventory />} />
         </Route>
         <Route element={<Guest />}>
           <Route path="/login" element={<Login />} />
